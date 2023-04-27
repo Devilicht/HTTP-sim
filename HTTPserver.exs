@@ -23,8 +23,30 @@ defmodule HttpServer do
   end
 
   defp parse_request(request) do
+    request_line = hd(String.split(request, "\r\n"))
+    [method, path, _] = String.split(request_line, " ")
+
+    %{
+      method: method,
+      path: path
+    }
   end
 
   defp generate_response(request) do
+    case request[:path] do
+      "/" ->
+        "HTTP/1.1 200 OK\r\n\r\n" <>
+        "Bem-vindo ao meu servidor HTTP!"
+
+      "/users" ->
+        users = ["João", "Maria", "Pedro"]
+        "HTTP/1.1 200 OK\r\n\r\n" <>
+        "Usuários: #{inspect(users)}"
+
+      _ ->
+        "HTTP/1.1 404 Not Found\r\n\r\n" <>
+        "Recurso não encontrado."
+    end
   end
 end
+HttpServer.start(4085)
